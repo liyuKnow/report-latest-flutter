@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Latest Build :: Golden Lion'),
+      home: const MyHomePage(title: 'Latest Build'),
     );
   }
 }
@@ -61,13 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Golden Lion',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const UserList()
-          ],
+          children: <Widget>[const UserList()],
         ),
       ),
     );
@@ -169,8 +163,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
       User newUser = User(firstName, lastName, country, gender);
       objectbox.userBox.put(newUser);
-
-      // print(row);
     }
   }
 
