@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 
 import 'package:latest/main.dart';
 import 'package:latest/src/models/user_model.dart';
+import 'package:latest/src/pages/qr_page.dart';
 
 class UserList extends StatefulWidget {
   const UserList({super.key});
@@ -54,7 +55,12 @@ class _UserListState extends State<UserList> {
                       subtitle: Text(user.lastName),
                       trailing: IconButton(
                         icon: const Icon(Icons.qr_code),
-                        onPressed: () => {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => QRPage()),
+                            // QRPage(title: "QR For ${user.id}")),
+                          );
+                        },
                       ),
                       // onTap: () {
                       //   user.name = Faker().person.firstName();

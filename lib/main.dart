@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:latest/src/helper/object_box.dart';
 import 'package:latest/src/pages/user_list.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
 
 /// Provides access to the ObjectBox Store throughout the app.
 late ObjectBox objectbox;
@@ -78,11 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
           } else if (value == MenuItems.export) {
             _exportData(); //  yellow comments
           } else if (value == MenuItems.sync) {
-            // ^ Navigation code -> QR SCANNER
-            // ^ Navigator.of(context).push(MaterialPageRoute(
-            // ^ builder : (context) => const ComponentName()
-            // ^ ))
-            print(value);
+            _syncData();
           }
         },
         itemBuilder: ((context) => [
@@ -131,13 +131,36 @@ class _MyHomePageState extends State<MyHomePage> {
             ]));
   }
 
-  _importData() {
+  _importData() async {
     // Download From Downloads Folder
+    // ^ CHECK PERMISSION
+    var status = await Permission.manageExternalStorage.status;
 
-    // & CHECK FOR PERMISSION
-    // & GET FILE FROM DOWNLOADS
-    // & GET FILE FROM DOWNLOADS
-    print("DATA IS ABOUT TO BE IMPORTED!");
+    // ^ REQUEST PERMISSION
+    if (status.isDenied) {
+      await Permission.manageExternalStorage.request();
+    }
+    // ^ GET FILE FROM DOWNLOADS
+    final directory = Directory('/storage/emulated/0/Download/');
+    const fileName = "usersDownload.xlsx";
+    final file = File(directory.path + fileName);
+
+    // ^ SAVE IT TO A LOCAL VARIABLE
+    List<String> rowDetail = [];
+
+    var excelBytes = File(file.path).readAsBytesSync();
+    var excelDecoder = SpreadsheetDecoder.decodeBytes(excelBytes, update: true);
+
+    for (var table in excelDecoder.tables.keys) {
+      for (var row in excelDecoder.tables[table]!.rows) {
+        rowDetail.add('$row'.replaceAll('[', '').replaceAll(']', ''));
+      }
+    }
+
+    // ^ INSERT INTO OBJECTBOX
+    for (var row in rowDetail) {
+      print(row);
+    }
   }
 
   _exportData() {

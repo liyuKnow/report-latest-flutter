@@ -16,6 +16,9 @@ dependencies:
   objectbox: ^1.6.2
   objectbox_flutter_libs: any
   permission_handler: ^10.2.0
+  spreadsheet_decoder: ^2.1.1
+  mobile_scanner: ^2.0.0
+  qr_code_scanner: ^1.0.1
 
 dev_dependencies:
   flutter_test:
