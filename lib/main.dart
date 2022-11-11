@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:latest/src/helper/object_box.dart';
+import 'package:latest/src/models/user_model.dart';
 import 'package:latest/src/pages/user_list.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
@@ -159,7 +160,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // ^ INSERT INTO OBJECTBOX
     for (var row in rowDetail) {
-      print(row);
+      var data = row.split(',');
+
+      var firstName = data[1];
+      var lastName = data[2];
+      var country = data[3];
+      var gender = data[4];
+
+      User newUser = User(firstName, lastName, country, gender);
+      objectbox.userBox.put(newUser);
+
+      // print(row);
     }
   }
 
@@ -170,5 +181,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _syncData() {
     // send current database data to API
+  }
+
+  _updateUser() {
+    // ^ LOCATION PERMISSION
+    // ^ GET LOCATION DATA
+    // ^ UPDATE USER AND COMPLETED FLAG
+    // ^ INSERT UPDATED LOCATION DATA
   }
 }
