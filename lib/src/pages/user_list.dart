@@ -66,7 +66,7 @@ class _UserListState extends State<UserList> {
         icon: const Icon(Icons.info_outline),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => DetailPage()),
+            MaterialPageRoute(builder: (context) => DetailPage(userId: id)),
             // QRPage(title: "QR For ${user.id}")),
           );
         },
