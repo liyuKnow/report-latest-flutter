@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:latest/src/helper/object_box.dart';
 import 'package:latest/src/models/user_model.dart';
 import 'package:latest/src/pages/user_list.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart'
+    as PermissionHandler;
 import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as XLSIO;
+import 'package:location/location.dart';
 
 /// Provides access to the ObjectBox Store throughout the app.
 late ObjectBox objectbox;
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Latest Build'),
+      home: MyHomePage(),
     );
   }
 }
@@ -41,9 +44,7 @@ class MyApp extends StatelessWidget {
 // ! HOME OF APPLICATION
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text("Latest Build"),
         centerTitle: true,
         actions: [popupActions()],
       ),
@@ -129,12 +130,14 @@ class _MyHomePageState extends State<MyHomePage> {
   _importData() async {
     // Download From Downloads Folder
     // ^ CHECK PERMISSION
-    var status = await Permission.manageExternalStorage.status;
+    var status =
+        await PermissionHandler.Permission.manageExternalStorage.status;
 
     // ^ REQUEST PERMISSION
     if (status.isDenied) {
-      await Permission.manageExternalStorage.request();
+      await PermissionHandler.Permission.manageExternalStorage.request();
     }
+
     // ^ GET FILE FROM DOWNLOADS
     final directory = Directory('/storage/emulated/0/Download/');
     const fileName = "usersDownload.xlsx";
@@ -146,11 +149,15 @@ class _MyHomePageState extends State<MyHomePage> {
     var excelBytes = File(file.path).readAsBytesSync();
     var excelDecoder = SpreadsheetDecoder.decodeBytes(excelBytes, update: true);
 
+    // TODO : TEST JSON OR CSV AGAINST EXCEL FILE IF WE CAN AVOID THIS LOOPS
     for (var table in excelDecoder.tables.keys) {
       for (var row in excelDecoder.tables[table]!.rows) {
         rowDetail.add('$row'.replaceAll('[', '').replaceAll(']', ''));
       }
     }
+
+    // ^ CLEAR OBJECTBOX
+    objectbox.userBox.removeAll();
 
     // ^ INSERT INTO OBJECTBOX
     for (var row in rowDetail) {
@@ -166,19 +173,63 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  _exportData() {
+  Future<void> _exportData() async {
     // export current database data to downloads folder
-    print("DATA IS ABOUT TO BE EXPORTED!");
+    // ^ GET ALL USERS AND THEIR LOCATION DATA
+    // ^ CREATE EXCEL AND EXPORT
+    // Create a new Excel document.
+    final XLSIO.Workbook workbook = XLSIO.Workbook();
+    //Accessing worksheet via index.
+    final XLSIO.Worksheet sheet = workbook.worksheets[0];
+
+    // ADD THE HEADERS
+    sheet.getRangeByName('A1').setText('FirstName');
+    sheet.getRangeByName('B1').setText('LastName');
+    sheet.getRangeByName('C1').setText('Gender');
+    sheet.getRangeByName('C1').setText('Country');
+    sheet.getRangeByName('D1').setText('Age');
+    sheet.getRangeByName('E1').setText('Date');
+    sheet.getRangeByName('F1').setText('Id');
+
+    // for (var i = 2; i < _userList.length; i++) {
+    //   print((_userList[i].firstName).toString());
+    //   sheet
+    //       .getRangeByName('A' + i.toString())
+    //       .setText((_userList[i].firstName).toString());
+    //   sheet
+    //       .getRangeByName('B' + i.toString())
+    //       .setText((_userList[i].lastName).toString());
+    //   sheet
+    //       .getRangeByName('C' + i.toString())
+    //       .setText((_userList[i].gender).toString());
+    //   sheet
+    //       .getRangeByName('C' + i.toString())
+    //       .setText((_userList[i].country).toString());
+    //   sheet
+    //       .getRangeByName('D' + i.toString())
+    //       .setText((_userList[i].age).toString());
+    //   // setDateTime(DateTime(2020, 12, 12, 1, 10, 20))
+    //   sheet
+    //       .getRangeByName('E' + i.toString())
+    //       .setText((_userList[i].date).toString());
+    //   sheet
+    //       .getRangeByName('F' + i.toString())
+    //       .setText((_userList[i].id).toString());
+    // }
+
+    // final List<int> bytes = workbook.saveAsStream();
+
+    // final directory = Directory('/storage/emulated/0/Download/');
+    // const fileName = "NewUsersDownload.xlsx";
+    // final file = File(directory.path + fileName);
+
+    // file.writeAsBytes(bytes);
+
+    // //Dispose the workbook.
+    // workbook.dispose();
   }
 
   _syncData() {
     // send current database data to API
-  }
-
-  _updateUser() {
-    // ^ LOCATION PERMISSION
-    // ^ GET LOCATION DATA
-    // ^ UPDATE USER AND COMPLETED FLAG
-    // ^ INSERT UPDATED LOCATION DATA
   }
 }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import 'package:latest/main.dart';
 import 'package:latest/src/models/user_model.dart';
 import 'package:latest/src/pages/qr_page.dart';
+import 'package:latest/src/pages/detail_page.dart';
 
 class UserList extends StatefulWidget {
   const UserList({super.key});
@@ -53,25 +52,35 @@ class _UserListState extends State<UserList> {
                     return ListTile(
                       title: Text(user.firstName),
                       subtitle: Text(user.lastName),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.qr_code),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => QRPage()),
-                            // QRPage(title: "QR For ${user.id}")),
-                          );
-                        },
-                      ),
-                      // onTap: () {
-                      //   user.name = Faker().person.firstName();
-                      //   user.email = Faker().internet.email();
-
-                      //   objectBox.insertUser(user);
-                      // },
+                      trailing: trailingIcon(context, user.completed, user.id),
                     );
                   },
                 );
               }
             }));
+  }
+
+  IconButton trailingIcon(BuildContext context, bool completed, int id) {
+    if (completed) {
+      return IconButton(
+        icon: const Icon(Icons.info_outline),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => DetailPage()),
+            // QRPage(title: "QR For ${user.id}")),
+          );
+        },
+      );
+      ;
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.qr_code),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => QRPage(userId: id)),
+          );
+        },
+      );
+    }
   }
 }

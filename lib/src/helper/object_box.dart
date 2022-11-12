@@ -20,9 +20,9 @@ class ObjectBox {
     updatedLocationBox = Box<UpdatedLocation>(store);
 
     // Add some demo data if the box is empty.
-    if (userBox.isEmpty()) {
-      _putDemoData();
-    }
+    // if (userBox.isEmpty()) {
+    //   _putDemoData();
+    // }
   }
 
   /// CREATE AN INSTANCE OF OBJECTBOX TO USE THROUGHOUT THE APP.
@@ -47,20 +47,25 @@ class ObjectBox {
   ///
   ///
   /// ! TEST TEST TEST
-  void _putDemoData() {
-    User userOne = User("kidus", "taye", "male", "american");
-    userBox.put(userOne);
+  // void _putDemoData() {
+  //   User userOne = User("kidus", "taye", "male", "american");
+  //   userBox.put(userOne);
 
-    UpdatedLocation updatedLocationOne = UpdatedLocation(8.8965, 11.6785);
-    updatedLocationOne.userId.target = userOne;
-    updatedLocationBox.put(updatedLocationOne);
-  }
+  //   UpdatedLocation updatedLocationOne = UpdatedLocation(8.8965, 11.6785);
+  //   updatedLocationOne.userId.target = userOne;
+  //   updatedLocationBox.put(updatedLocationOne);
+  // }
 
   // ADD USER
   void addUser(
       String firstName, String lastName, String country, String gender) {
     User newUser = User(firstName, lastName, country, gender);
     userBox.put(newUser);
+  }
+
+  void setCompleted(User? user) {
+    user?.completed = true;
+    userBox.put(user!);
   }
 
   // UPDATE NAD INSERT IN ONE
@@ -83,9 +88,9 @@ class ObjectBox {
 
   // ADD UPDATED LOCATION
   void addUpdatedLocation(
-      double lat, double long, DateTime updatedAt, User userId) {
+      double? lat, double? long, DateTime updatedAt, User userId) {
     UpdatedLocation newUpdatedLocation =
-        UpdatedLocation(lat, long, updatedAt: updatedAt);
+        UpdatedLocation(lat!, long!, updatedAt: updatedAt);
     newUpdatedLocation.userId.target = userId;
 
     updatedLocationBox.put(newUpdatedLocation);
